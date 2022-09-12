@@ -1,3 +1,5 @@
+#include <stdio.h>
+
 #define KEY_LOG 1
 
 #ifdef KEY_LOG

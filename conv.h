@@ -1,1 +1,1 @@
-int convertSjis2p6(const unsigned char inData[3], unsigned char *outData);
+int convertSjis2p6(unsigned char *inData ,unsigned char *outData);

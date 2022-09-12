@@ -21,7 +21,7 @@ THE SOFTWARE.
 */
 
 /** iP6: PC-6000/6600 series emualtor ************************/
-/**          ãƒ­ãƒ¼ãƒžå­—å¤‰æ›                                   **/
+/**          ƒ[ƒ}Žš•ÏŠ·                                   **/
 /**          name is romaji.c                               **/
 /**                                                         **/
 /**          by Windy                                       **/
@@ -29,11 +29,11 @@ THE SOFTWARE.
 #ifndef _ROMAJI_H
 #define _ROMAJI_H
 
-#define HENKAN_SUCCESS  1		// ãƒ­ãƒ¼ãƒžå­—å¤‰æ›æˆåŠŸ
-#define HENKAN_FAILED   0		// ãƒ­ãƒ¼ãƒžå­—å¤‰æ›å¤±æ•—
-#define HENKAN_DOING   -1		// ãƒ­ãƒ¼ãƒžå­—å¤‰æ›ä¸­
-#define HENKAN_CANCEL   2		// ãƒ­ãƒ¼ãƒžå­—å¤‰æ›ã—ãªã„ã€€& ã‚­ãƒ£ãƒ³ã‚»ãƒ«
-#define HENKAN_SUCCESS_LTU 3	// ãƒ­ãƒ¼ãƒžå­—å¤‰æ›æˆåŠŸ(ã£)
+#define HENKAN_SUCCESS  1		// ƒ[ƒ}Žš•ÏŠ·¬Œ÷
+#define HENKAN_FAILED   0		// ƒ[ƒ}Žš•ÏŠ·Ž¸”s
+#define HENKAN_DOING   -1		// ƒ[ƒ}Žš•ÏŠ·’†
+#define HENKAN_CANCEL   2		// ƒ[ƒ}Žš•ÏŠ·‚µ‚È‚¢@& ƒLƒƒƒ“ƒZƒ‹
+#define HENKAN_SUCCESS_LTU 3	// ƒ[ƒ}Žš•ÏŠ·¬Œ÷(‚Á)
 
 
 

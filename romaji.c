@@ -29,12 +29,17 @@ based on https://github.com/windy6001/ROMAJI/
 #include "keys.h"
 #include "conv.h"
 #include "romaji.h"
+#include "log.h"
+
+
+int kanaMode=1;
+int katakana=1;
 
 
 // ****************************************************************************
 //      functions
 // ****************************************************************************
-static void convertKana2Katakana(char* buff);
+static void convertKana2Katakana(unsigned char* buff);
 
 
 // ****************************************************************************
@@ -457,11 +462,11 @@ int convert_romaji2kana( int osdkeycode )
 
          found = convert_search( buff , &line);	// convert to romaji ローマ字変換してみる
 
-         PRINTDEBUG1(KEY_LOG,"[P6][convert_romaji2kana] input buff= '%s' \n ", buff);
+         PRINTDEBUG(KEY_LOG,"[P6][convert_romaji2kana] input buff= '%s' \n ", buff);
 
         if( !found )			// not match
             {
-            PRINTDEBUG1(KEY_LOG,"[P6][convert_romaji2kana] convert searching  '%s'  not found \n", buff);
+            PRINTDEBUG(KEY_LOG,"[P6][convert_romaji2kana] convert searching  '%s'  not found \n", buff);
             memset(buff, 0, sizeof(buff));
             idx=0;
             }
@@ -473,7 +478,7 @@ int convert_romaji2kana( int osdkeycode )
             if( found == HENKAN_SUCCESS_LTU)
                 line =0;        // 子音がダブルで来たときは、強制的に、「っ」に変換する
 
-            PRINTDEBUG1(KEY_LOG,"[P6][convert_romaji2kana] convert_success '%s' -> ",buff);
+            PRINTDEBUG(KEY_LOG,"[P6][convert_romaji2kana] convert_success '%s' -> ",buff);
 
 
            {
@@ -485,7 +490,6 @@ int convert_romaji2kana( int osdkeycode )
 
 
 
-            PRINTDEBUG(KEY_LOG,"\n");
             //if( !saihenkan_flag) {idx =0;	memset( buff , 0,  sizeof( buff));}
             //saihenkan_flag=0;
             if (found == HENKAN_SUCCESS_LTU)        // 子音ダブルできたとき（例えば、KKのときは、KK -> K にして、次の母音を待つ
@@ -501,7 +505,7 @@ int convert_romaji2kana( int osdkeycode )
             }
         else	// part match , continue buffaling...
             {
-            PRINTDEBUG2(KEY_LOG,"[P6][convert_romaji2kana] convert: part match '%s'  line=%d \n ", buff ,line);
+            PRINTDEBUG(KEY_LOG,"[P6][convert_romaji2kana] convert: part match '%s'  line=%d \n", buff ,line);
             }
         }
 
