@@ -462,7 +462,7 @@ int convert_romaji2kana( int osdkeycode )
 
          found = convert_search( buff , &line);	// convert to romaji ローマ字変換してみる
 
-         PRINTDEBUG(KEY_LOG,"[P6][convert_romaji2kana] input buff= '%s' \n ", buff);
+         PRINTDEBUG(KEY_LOG,"[P6][convert_romaji2kana] input buff= '%s' \n", buff);
 
         if( !found )			// not match
             {
@@ -478,7 +478,7 @@ int convert_romaji2kana( int osdkeycode )
             if( found == HENKAN_SUCCESS_LTU)
                 line =0;        // 子音がダブルで来たときは、強制的に、「っ」に変換する
 
-            PRINTDEBUG(KEY_LOG,"[P6][convert_romaji2kana] convert_success '%s' -> ",buff);
+            PRINTDEBUG(KEY_LOG,"[P6][convert_romaji2kana] convert_success '%s' -> \t",buff);
 
 
            {
