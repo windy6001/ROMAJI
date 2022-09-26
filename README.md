@@ -1,7 +1,7 @@
 # ROMAJI conversion program
 
-Copyright (c) 2020 Windy
-Version 1.0
+Copyright (c) 2020-2022 Windy
+Version 2.0
 
 
 # What is this?
@@ -11,8 +11,6 @@ Version 1.0
 
 
 ## 使い方
-
-今のところ、Windowsと、Visual Studio での使用を想定しています。
 
 OSキーイベントのキーが押されたとき、convert_romaji2kana 関数を呼んでください。
 
