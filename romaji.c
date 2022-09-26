@@ -494,6 +494,7 @@ int convert_romaji2kana( int osdkeycode )
 
            {
             char tmp[10];
+	    strncpy(tmp , romaji_tbl[line].keycode,9);
             //convertSjis2p6( romaji_tbl[line].keycode, tmp);  // convert shift JIS -> P6 code
             convertKana2Katakana( tmp);
             putAutokeyMessage( tmp);                         // register autokey
