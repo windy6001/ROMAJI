@@ -1,7 +1,7 @@
 /*
 name is romaji.c
 
-Copyright (c) 2020 Windy
+Copyright (c) 2020-2022 Windy
 Version 2.0
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -54,10 +54,17 @@ P6_DD=0xDE , P6_HD=0xDF		// P6_DD=濁点、 P6_HD=半濁点
 };
 
 // ****************************************************************************
-//      functions
+//      internal functions
 // ****************************************************************************
-static void convertKana2Katakana(unsigned char* buff);
-extern void putAutokeyMessage( const char *buff);
+static int romaji_convert_serach( char *buff , int *line);
+static int isBoin( int osdkeycode);
+static int isShin( int osdkeycode);
+
+// ****************************************************************************
+//          変換結果
+// ****************************************************************************
+#define MAX_RESULT 4
+static char result[ MAX_RESULT];
 
 
 // ****************************************************************************
@@ -95,7 +102,7 @@ static struct _romaji_tbl romaji_tbl[] = {
 { 3,{ OSDK_W ,OSDK_H  ,OSDK_A ,0 },{P6_U, P6_LA} },	// うぁ
 { 3,{ OSDK_W ,OSDK_H  ,OSDK_I ,0 },{P6_U, P6_LI} },	// うぃ
 { 2,{ OSDK_W ,OSDK_I  ,0      ,0 },{P6_U, P6_LI} },	// うぃ
-{ 2,{ OSDK_W ,OSDK_U  ,0      ,0 },{P6_U, P6_LU} },  // う
+{ 2,{ OSDK_W ,OSDK_U  ,0      ,0 },{P6_U       } },  // う
 { 3,{ OSDK_W ,OSDK_H  ,OSDK_E ,0 },{P6_U, P6_LE} },	// うぇ
 { 2,{ OSDK_W ,OSDK_E  ,0      ,0 },{P6_U, P6_LE} },	// うぇ
 { 3,{ OSDK_W ,OSDK_H  ,OSDK_O ,0 },{P6_U, P6_LO} },	// うぉ
@@ -107,7 +114,7 @@ static struct _romaji_tbl romaji_tbl[] = {
 {2,{ OSDK_K ,OSDK_E  , 0    ,0}, {P6_KE}},
 {2,{ OSDK_K ,OSDK_O  , 0    ,0}, {P6_KO}},
 
-{3,{ OSDK_K ,OSDK_Y  ,OSDK_A ,0}, {P6_KI,P6_LA}},	// きゃきぃきゅきぇきょ
+{3,{ OSDK_K ,OSDK_Y  ,OSDK_A ,0}, {P6_KI,P6_LYA}},	// きゃきぃきゅきぇきょ
 {3,{ OSDK_K ,OSDK_Y  ,OSDK_I ,0}, {P6_KI,P6_LI}},
 {3,{ OSDK_K ,OSDK_Y  ,OSDK_U ,0}, {P6_KI,P6_LYU}},
 {3,{ OSDK_K ,OSDK_Y  ,OSDK_E ,0}, {P6_KI,P6_LE}},
@@ -370,7 +377,7 @@ static struct _romaji_tbl romaji_tbl[] = {
 // 　母音かどうか？
 // 非0  :はい    0:いいえ
 // ****************************************************************************
-int isBoin( int osdkeycode)
+static int isBoin( int osdkeycode)
 {
     return (osdkeycode==OSDK_A || osdkeycode==OSDK_I || osdkeycode==OSDK_U || osdkeycode==OSDK_E || osdkeycode==OSDK_O );
 }
@@ -379,7 +386,7 @@ int isBoin( int osdkeycode)
 // 　子音かどうか？
 // 非0  :はい    0:いいえ
 // ****************************************************************************
-int isShin( int osdkeycode)
+static int isShin( int osdkeycode)
 {
     return (osdkeycode==OSDK_K || osdkeycode==OSDK_S || osdkeycode==OSDK_T || osdkeycode==OSDK_H || osdkeycode==OSDK_M || osdkeycode==OSDK_Y
     || osdkeycode==OSDK_R || osdkeycode==OSDK_W || osdkeycode==OSDK_P || osdkeycode==OSDK_F 
@@ -387,7 +394,7 @@ int isShin( int osdkeycode)
 }
 
 // ****************************************************************************
-// 		convert_search:ローマ字の綴りをマッチングする (convert_romaji2kana から呼ばれる)
+// 		romaji_convert_search:ローマ字の綴りをマッチングする (romaji_convert_romaji2kana から呼ばれる)
 //
 //   In:  buff    変換したい文字列
 //        line    変換結果(romaji_tbl テーブルのインデックス)
@@ -397,14 +404,14 @@ int isShin( int osdkeycode)
 //        HENKAN_FAILED    変換失敗
 //        HENKAN_SUCCESS_LTU っ変換成功
 // ****************************************************************************
-int convert_search( char *buff , int *line)
+static int romaji_convert_search( char *buff , int *line)
 {
     int i;
     int found =HENKAN_FAILED;
 
     *line = 0;
     
-    if( buff[0]== buff[1])				// 子音が重なって入力されたら、っに変換
+    if( buff[0]== buff[1])				// 子音が重なって入力されたら、「っ」に変換
         if( isShin( buff[0]) && isShin(buff[1]))
             {
              return HENKAN_SUCCESS_LTU;
@@ -432,22 +439,23 @@ int convert_search( char *buff , int *line)
 
 
 // ****************************************************************************
-// 		convert_romaji2kana:
+// 		romaji_convert_romaji2kana:
 //		ローマ字から、かなに変換する
 //
 //  OSキーイベントのkeydown のところで、かなモードかつ、ローマ字変換モードなら、これを呼ぶ。
 //
 //
-//	処理：ローマ字変換できるかチェックして、変換に成功したら、キー入力するように、スケジュールに登録する。
+//	処理：ローマ字変換できるかチェックして、変換に成功したら、HENKAN_SUCCESS か、HENKAN_SUCCESS_LTUを返す。
+//       romaji_get_result() で、変換結果を取得する。
 //
 //
-// Out: HENKAN_SUCCESS: ローマ字変換した、キー入力するように、スケジュールに登録した
+// Out: HENKAN_SUCCESS: ローマ字変換に成功した
 //      HENKAN_FAILED:  変換失敗
 //      HENKAN_DOING  : 変換中
 //      HENKAN_CANCEL : 無変換
 //      HENKAN_SUCCESS_LTU っ変換成功
 //***************************************************************
-int convert_romaji2kana( int osdkeycode )
+int romaji_convert_romaji2kana( int osdkeycode )
 {
     static char buff[4];
     static int  idx=0;
@@ -471,13 +479,13 @@ int convert_romaji2kana( int osdkeycode )
         {
          buff[ idx++ ]= osdkeycode;
 
-         found = convert_search( buff , &line);	// convert to romaji ローマ字変換してみる
+         found = romaji_convert_search( buff , &line);	// convert to romaji ローマ字変換してみる
 
-         PRINTDEBUG(KEY_LOG,"[P6][convert_romaji2kana] input buff= '%s' \n", buff);
+         PRINTDEBUG(KEY_LOG,"[P6][romaji_convert_romaji2kana] input buff= '%s' \n", buff);
 
         if( !found )			// not match
             {
-            PRINTDEBUG(KEY_LOG,"[P6][convert_romaji2kana] convert searching  '%s'  not found \n", buff);
+            PRINTDEBUG(KEY_LOG,"[P6][romaji_convert_romaji2kana] convert searching  '%s'  not found \n", buff);
             memset(buff, 0, sizeof(buff));
             idx=0;
             }
@@ -489,21 +497,11 @@ int convert_romaji2kana( int osdkeycode )
             if( found == HENKAN_SUCCESS_LTU)
                 line =0;        // 子音がダブルで来たときは、強制的に、「っ」に変換する
 
-            PRINTDEBUG(KEY_LOG,"[P6][convert_romaji2kana] convert_success '%s' -> \t",buff);
+            PRINTDEBUG(KEY_LOG,"[P6][romaji_convert_romaji2kana] convert_success '%s' -> \t",buff);
 
 
-           {
-            char tmp[10];
-	    strncpy(tmp , romaji_tbl[line].keycode,9);
-            //convertSjis2p6( romaji_tbl[line].keycode, tmp);  // convert shift JIS -> P6 code
-            convertKana2Katakana( tmp);
-            putAutokeyMessage( tmp);                         // register autokey
-           }
+	        strncpy(result , romaji_tbl[line].keycode, MAX_RESULT);
 
-
-
-            //if( !saihenkan_flag) {idx =0;	memset( buff , 0,  sizeof( buff));}
-            //saihenkan_flag=0;
             if (found == HENKAN_SUCCESS_LTU)        // 子音ダブルできたとき（例えば、KKのときは、KK -> K にして、次の母音を待つ
                 {
                  buff[0]= buff[1]; buff[1] = buff[2]; buff[2]= buff[3]; buff[3]=0;
@@ -517,7 +515,7 @@ int convert_romaji2kana( int osdkeycode )
             }
         else	// part match , continue buffaling...
             {
-            PRINTDEBUG(KEY_LOG,"[P6][convert_romaji2kana] convert: part match '%s'  line=%d \n", buff ,line);
+            PRINTDEBUG(KEY_LOG,"[P6][romaji_convert_romaji2kana] convert: part match '%s'  line=%d \n", buff ,line);
             }
         }
 
@@ -530,19 +528,36 @@ int convert_romaji2kana( int osdkeycode )
 }
 
 // ****************************************************************************
-//  カタカナが入力される状態だと、ひらがな→カタカナに変換する
-//      In: Out: buff バッファ 
+//  ひらがな→カタカナに変換する
+//      In: buff バッファ
+//     Out: 変換結果
 // ****************************************************************************
-void convertKana2Katakana(unsigned char* buff)
+unsigned char * romaji_convertKana2Katakana(unsigned char* buff)
 {
     unsigned char *p;
     p= buff;
+
     for (int i = 0; i< strlen(buff); i++) {
-        if (kanaMode && katakana) {
-            if ((0x86 <= *p && *p <= 0x9f) || (0xe0 <= *p && *p <= 0xfd)) {   // kana?
-                *p ^= 0x20;
-            }
-        p++;
+        if ((0x86 <= *p && *p <= 0x9f) || (0xe0 <= *p && *p <= 0xfd)) {   // kana?
+            *p ^= 0x20;
         }
+        p++;
     }
+    return buff;
+}
+
+// ****************************************************************************
+//   初期化
+// ****************************************************************************
+void romaji_init(void)
+{
+    memset(result,0,sizoef(result));
+}
+
+// ****************************************************************************
+//   結果を取得
+// ****************************************************************************
+char *romaji_get_result(void)
+{
+    return result;
 }

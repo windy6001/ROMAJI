@@ -30,10 +30,9 @@ THE SOFTWARE.
 #define HENKAN_SUCCESS_LTU 3	// ローマ字変換成功(っ)
 
 
-
-void autokeyin_func(void);
-int convert_search( char *buff , int *line);
-int convert_romaji2kana( int osdkeycode );
+int romaji_convert_romaji2kana( int osdkeycode );
+char *romaji_get_result(void);
+unsigned char * romaji_convertKana2Katakana(unsigned char* buff);
 
 
 #endif // ROMAJI_H

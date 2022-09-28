@@ -13,13 +13,19 @@ Version 2.0
 
 ## 使い方
 
-OSキーイベントのキーが押されたとき、convert_romaji2kana 関数を呼んでください。
+最初に、romaji_init() 関数で、初期化をしてください。
+OSキーイベントのキーが押されたとき、romaji_convert_romaji2kana 関数を呼んでください。
 
-ローマ字変換が成功した時、convert_romaji2kana 関数の中の、PutAutokeyMessage 関数を呼び出す箇所で、結果が渡されるので、、エミュレータ側で、自動的に、渡されたキーコードを、押されたことにする処理を書いてください。
+ローマ字変換が成功した時、romaji_convert_romaji2kana 関数は、HENKAN_SUCCESS か、HENKAN_SUCCESS_LTU を返却するので、
+romaji_get_result(）関数で、変換結果を取得してください。変換結果は半角ひらがなになっています。
+カタカナに変換したい場合は、romaji_convertKana2Katakana()関数を呼び出してください。
+
+変換結果を取得したら、エミュレータ側で、自動的に、キーを押されたことにする処理を走らせてください。
 
 
 test.c は、テストですので、結果を１６進数と、半角カタカナで表示します。
-Windows のcmd.exe で、半角カタカナは表示できます。（文字コードの設定を SHIFT JIS から変えてない場合）
+Windows のcmd.exe で、半角カタカナは表示できます。
+または、UTF8 で表示したい場合は、-utf8 オプションをつけて起動してください。
 
 
 ## test プログラムの ビルドの仕方

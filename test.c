@@ -28,8 +28,33 @@ THE SOFTWARE.
 #include "romaji.h"
 #include "log.h"
 
+int utf8_flag  = 0;
 
-// Autokey にメッセージを登録する
+// ****************************************************************************
+//   １バイトの半角カタカナを、UTF-8 の半角カタカナに変換する (半角カタカナのみ対応)
+// ****************************************************************************
+char *toUTF8katakana( unsigned char c)
+{
+	static char outBuff[256];
+	unsigned char *p;
+	int  utf8;
+
+	memset(outBuff,0,sizeof(outBuff));
+	p= outBuff;
+
+	if( 0xa0 <= c && c <=0xbf) {
+		utf8 = 0xEFBD00+ c;
+	}else if( 0xc0 <= c && c<= 0xdf) {
+		utf8 = 0xEFBDC0+ c;
+	}
+
+	*p = (utf8>>16)& 0xff; p++;
+	*p = (utf8>>8) & 0xff; p++;
+	*p = (utf8)    & 0xff; p++;
+	*p = 0;
+	return outBuff;
+}
+
 void putAutokeyMessage( const char *buff)
 {
 	for(int i=0; i<strlen(buff); i++){
@@ -38,20 +63,36 @@ void putAutokeyMessage( const char *buff)
 	PRINTDEBUG(KEY_LOG,"'");
 
 	for(int i=0; i<strlen(buff); i++){
-		printf("%c",buff[i]& 0xff);
+		if( !utf8_flag ) {
+			printf("%c",buff[i]& 0xff);
+		} else {
+			printf("%s",toUTF8katakana(buff[i] &0xff));
+		}
 	}
+
 	PRINTDEBUG(KEY_LOG,"'\n");
 }
 
 int main(int argc, char *argv[])
 {
 	char buf[256];
+	if( argc >1) {
+		if( strcmp(argv[1],"-utf8")==0) {
+			utf8_flag =1;
+			printf("UTF-8 is ON \n");
+		} else {
+			printf("UTF-8 is OFF \n");
+		}
+	}
 	printf("ENTER ROMAJI >>>");
 
 	fgets(buf,sizeof(buf),stdin);
 	for(int i=0; i<(int)strlen(buf);i++) {
 		int key = buf[i];
-		int ret = convert_romaji2kana( key );
+		int ret = romaji_convert_romaji2kana( key );
+		if( ret == HENKAN_SUCCESS || ret == HENKAN_SUCCESS_LTU) {
+			putAutokeyMessage( romaji_convertKana2Katakana( romaji_get_result()));
+		}
 	}
 }
 
