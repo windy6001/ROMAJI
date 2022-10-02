@@ -4,8 +4,8 @@
 CC=cl
 
 
-test : test.c romaji.c log.h keys.h
-	$(CC) /utf-8 test.c romaji.c
+test : test.cpp romaji.cpp log.h keys.h
+	$(CC) /utf-8 test.cpp romaji.cpp
 clean: 
 	del *.obj
 	del test.exe

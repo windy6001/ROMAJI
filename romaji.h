@@ -29,10 +29,25 @@ THE SOFTWARE.
 #define HENKAN_CANCEL   2		// ローマ字変換しない　& キャンセル
 #define HENKAN_SUCCESS_LTU 3	// ローマ字変換成功(っ)
 
+// ****************************************************************************
+//          変換結果
+// ****************************************************************************
+#define MAX_RESULT 4            // 変換結果の最大文字数
 
-int romaji_convert_romaji2kana( int osdkeycode );
-char *romaji_get_result(void);
-unsigned char * romaji_convertKana2Katakana(unsigned char* buff);
 
+class Romaji {
+public:
+Romaji(void);
+int    convert_romaji2kana( int osdkeycode );
+char * get_result(void);
+char * convertKana2Katakana(char* buff);
+void   init(void);
+
+private:
+int    convert_search( char *buff , int *line);
+int    isBoin( int osdkeycode);
+int    isShin( int osdkeycode);
+char   result[ MAX_RESULT];
+};
 
 #endif // ROMAJI_H

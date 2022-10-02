@@ -36,7 +36,7 @@ int utf8_flag  = 0;
 char *toUTF8katakana( unsigned char c)
 {
 	static char outBuff[256];
-	unsigned char *p;
+	char *p;
 	int  utf8;
 
 	memset(outBuff,0,sizeof(outBuff));
@@ -75,6 +75,8 @@ void putAutokeyMessage( const char *buff)
 
 int main(int argc, char *argv[])
 {
+	Romaji *romaji = new Romaji();
+
 	char buf[256];
 	if( argc >1) {
 		if( strcmp(argv[1],"-utf8")==0) {
@@ -87,11 +89,11 @@ int main(int argc, char *argv[])
 	printf("ENTER ROMAJI >>>");
 
 	fgets(buf,sizeof(buf),stdin);
-	for(int i=0; i<(int)strlen(buf);i++) {
+	for(int i=0; i<strlen(buf);i++) {
 		int key = buf[i];
-		int ret = romaji_convert_romaji2kana( key );
+		int ret = romaji->convert_romaji2kana( key );
 		if( ret == HENKAN_SUCCESS || ret == HENKAN_SUCCESS_LTU) {
-			putAutokeyMessage( romaji_convertKana2Katakana( romaji_get_result()));
+			putAutokeyMessage( romaji->convertKana2Katakana( romaji->get_result()));
 		}
 	}
 }
