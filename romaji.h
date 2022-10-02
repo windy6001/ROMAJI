@@ -20,26 +20,34 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-/** iP6: PC-6000/6600 series emualtor ************************/
-/**          ƒ[ƒ}š•ÏŠ·                                   **/
-/**          name is romaji.c                               **/
-/**                                                         **/
-/**          by Windy                                       **/
-/*************************************************************/
 #ifndef _ROMAJI_H
 #define _ROMAJI_H
 
-#define HENKAN_SUCCESS  1		// ƒ[ƒ}š•ÏŠ·¬Œ÷
-#define HENKAN_FAILED   0		// ƒ[ƒ}š•ÏŠ·¸”s
-#define HENKAN_DOING   -1		// ƒ[ƒ}š•ÏŠ·’†
-#define HENKAN_CANCEL   2		// ƒ[ƒ}š•ÏŠ·‚µ‚È‚¢@& ƒLƒƒƒ“ƒZƒ‹
-#define HENKAN_SUCCESS_LTU 3	// ƒ[ƒ}š•ÏŠ·¬Œ÷(‚Á)
+#define HENKAN_SUCCESS  1		// ãƒ­ãƒ¼ãƒå­—å¤‰æ›æˆåŠŸ
+#define HENKAN_FAILED   0		// ãƒ­ãƒ¼ãƒå­—å¤‰æ›å¤±æ•—
+#define HENKAN_DOING   -1		// ãƒ­ãƒ¼ãƒå­—å¤‰æ›ä¸­
+#define HENKAN_CANCEL   2		// ãƒ­ãƒ¼ãƒå­—å¤‰æ›ã—ãªã„ã€€& ã‚­ãƒ£ãƒ³ã‚»ãƒ«
+#define HENKAN_SUCCESS_LTU 3	// ãƒ­ãƒ¼ãƒå­—å¤‰æ›æˆåŠŸ(ã£)
+
+// ****************************************************************************
+//          å¤‰æ›çµæœ
+// ****************************************************************************
+#define MAX_RESULT 4            // å¤‰æ›çµæœã®æœ€å¤§æ–‡å­—æ•°
 
 
+class Romaji {
+public:
+Romaji(void);
+int    convert_romaji2kana( int osdkeycode );
+char * get_result(void);
+char * convertKana2Katakana(char* buff);
+void   init(void);
 
-void autokeyin_func(void);
-int convert_search( char *buff , int *line);
-int convert_romaji2kana( int osdkeycode );
-
+private:
+int    convert_search( char *buff , int *line);
+int    isBoin( int osdkeycode);
+int    isShin( int osdkeycode);
+char   result[ MAX_RESULT];
+};
 
 #endif // ROMAJI_H

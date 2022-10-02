@@ -1,10 +1,8 @@
-CC=gcc
-CC=cl.exe
+CC=g++
 
 
-test : test.c romaji.c log.h keys.h
-	$(CC) -o test test.c romaji.c  conv.c 
+test : test.cpp romaji.cpp log.h keys.h
+	$(CC) -o test test.cpp romaji.cpp
 clean: 
 	rm *.o
-	rm *.obj
-	rm *.exe
+	rm test
