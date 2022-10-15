@@ -393,7 +393,7 @@ int Romaji::isShin( int osdkeycode)
 //        HENKAN_FAILED    変換失敗
 //        HENKAN_SUCCESS_LTU っ変換成功
 // ****************************************************************************
-int Romaji::convert_search( char *buff , int *line)
+int Romaji::convertSearch( char *buff , int *line)
 {
     int i;
     int found =HENKAN_FAILED;
@@ -428,7 +428,7 @@ int Romaji::convert_search( char *buff , int *line)
 
 
 // ****************************************************************************
-// 		romaji_convert_romaji2kana:
+// 		convertRomaji2kana:
 //		ローマ字から、かなに変換する
 //
 //  OSキーイベントのkeydown のところで、かなモードかつ、ローマ字変換モードなら、これを呼ぶ。
@@ -444,7 +444,7 @@ int Romaji::convert_search( char *buff , int *line)
 //      HENKAN_CANCEL : 無変換
 //      HENKAN_SUCCESS_LTU っ変換成功
 //***************************************************************
-int Romaji::convert_romaji2kana( int osdkeycode )
+int Romaji::convertRomaji2kana( int osdkeycode )
 {
     static char buff[4];
     static int  idx=0;
@@ -454,21 +454,18 @@ int Romaji::convert_romaji2kana( int osdkeycode )
     int   saihenkan_flag=0;
 
 
-    if(  osdkeycode < 0x20 || osdkeycode == OSDK_LEFT || osdkeycode == OSDK_RIGHT || osdkeycode== OSDK_UP
-       || osdkeycode== OSDK_DOWN || osdkeycode==OSDK_SCROLLOCK || osdkeycode == OSDK_PAGEUP 
-        || osdkeycode == OSDK_PAGEDOWN|| (osdkeycode >= OSDK_F1 && osdkeycode <= OSDK_F10) || osdkeycode==OSDK_END 
-        || osdkeycode ==OSDK_SHIFT || osdkeycode == OSDK_ALT || osdkeycode == OSDK_SPACE)
+    if( !(( OSDK_A <= osdkeycode && osdkeycode <= OSDK_Z) || osdkeycode == OSDK_AT || osdkeycode == OSDK_LEFTBRACKET) ) // 使えるキー判定
         {
         idx=0;
         memset(buff,0, sizeof(buff));
         return HENKAN_CANCEL;
         }
 
-    if(idx <3  && 0xd <= osdkeycode && osdkeycode <0x7f)
+    if(idx <3 )
         {
          buff[ idx++ ]= osdkeycode;
 
-         found = convert_search( buff , &line);	// convert to romaji ローマ字変換してみる
+         found = convertSearch( buff , &line);	// convert to romaji ローマ字変換してみる
 
          PRINTDEBUG(KEY_LOG,"[romaji][convert_romaji2kana] input buff= '%s' \n", buff);
 
@@ -555,7 +552,7 @@ void Romaji::init(void)
 // ****************************************************************************
 //   結果を取得
 // ****************************************************************************
-char *Romaji::get_result(void)
+char *Romaji::getResult(void)
 {
     return result;
 }

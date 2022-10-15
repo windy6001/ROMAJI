@@ -38,13 +38,13 @@ THE SOFTWARE.
 class Romaji {
 public:
 Romaji(void);
-int    convert_romaji2kana( int osdkeycode );
-char * get_result(void);
+int    convertRomaji2kana( int osdkeycode );
+char * getResult(void);
 char * convertKana2Katakana(char* buff);
 void   init(void);
 
 private:
-int    convert_search( char *buff , int *line);
+int    convertSearch( char *buff , int *line);
 int    isBoin( int osdkeycode);
 int    isShin( int osdkeycode);
 char   result[ MAX_RESULT];

@@ -91,9 +91,9 @@ int main(int argc, char *argv[])
 	fgets(buf,sizeof(buf),stdin);
 	for(int i=0; i<strlen(buf);i++) {
 		int key = buf[i];
-		int ret = romaji->convert_romaji2kana( key );
+		int ret = romaji->convertRomaji2kana( key );
 		if( ret == HENKAN_SUCCESS || ret == HENKAN_SUCCESS_LTU) {
-			putAutokeyMessage( romaji->convertKana2Katakana( romaji->get_result()));
+			putAutokeyMessage( romaji->convertKana2Katakana( romaji->getResult()));
 		}
 	}
 }
