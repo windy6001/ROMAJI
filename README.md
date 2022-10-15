@@ -13,10 +13,10 @@ Version 2.0
 
 ## 使い方
 
-OSキーイベントのキーが押されたとき、convert_romaji2kana() 関数を呼んでください。
+OSキーイベントのキーが押されたとき、convertRomaji2kana() 関数を呼んでください。
 
-ローマ字変換が成功した時、convert_romaji2kana() 関数は、HENKAN_SUCCESS か、HENKAN_SUCCESS_LTU を返却するので、
-get_result(）関数で、変換結果を取得してください。変換結果は半角ひらがなになっています。
+ローマ字変換が成功した時、convertRomaji2kana() 関数は、HENKAN_SUCCESS か、HENKAN_SUCCESS_LTU を返却するので、
+getResult(）関数で、変換結果を取得してください。変換結果は半角ひらがなになっています。
 半角カタカナに変換したい場合は、convertKana2Katakana()関数を呼び出してください。
 
 変換結果を取得したら、エミュレータ側で、自動的に、キーを押されたことにする処理を走らせてください。
