@@ -22,7 +22,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-based on https://github.com/windy6001/ROMAJI/
+ https://github.com/windy6001/ROMAJI/
 */
 
 #include <memory.h>
@@ -435,7 +435,7 @@ int Romaji::convertSearch( char *buff , int *line)
 //
 //
 //	処理：ローマ字変換できるかチェックして、変換に成功したら、HENKAN_SUCCESS か、HENKAN_SUCCESS_LTUを返す。
-//       romaji_get_result() で、変換結果を取得する。
+//       getResult() で、変換結果を取得する。
 //
 //
 // Out: HENKAN_SUCCESS: ローマ字変換に成功した
@@ -450,8 +450,6 @@ int Romaji::convertRomaji2kana( int osdkeycode )
     static int  idx=0;
     int   line=0;
     int   found=0;
-
-    int   saihenkan_flag=0;
 
 
     if( !(( OSDK_A <= osdkeycode && osdkeycode <= OSDK_Z) || osdkeycode == OSDK_AT || osdkeycode == OSDK_LEFTBRACKET) ) // 使えるキー判定
@@ -534,7 +532,7 @@ char * Romaji::convertKana2Katakana(char* buff)
 }
 
 // ****************************************************************************
-//   初期化
+//   コンストラクター
 // ****************************************************************************
 Romaji::Romaji(void)
 {
