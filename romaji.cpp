@@ -2,7 +2,7 @@
 name is romaji.c
 
 Copyright (c) 2020-2022 Windy
-Version 2.0
+Version 2.1
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -62,7 +62,7 @@ P6_DD=0xDE , P6_HD=0xDF		// P6_DD=濁点、 P6_HD=半濁点
 struct _romaji_tbl {
     int num;
     const char romaji[4];
-    const unsigned char keycode[7];
+    const char keycode[7];
 };
 
 static struct _romaji_tbl romaji_tbl[] = {
@@ -364,18 +364,18 @@ static struct _romaji_tbl romaji_tbl[] = {
 
 // ****************************************************************************
 // 　母音かどうか？
-// 非0  :はい    0:いいえ
+// true:はい    false:いいえ
 // ****************************************************************************
-int Romaji::isBoin( int osdkeycode)
+bool Romaji::isBoin( int osdkeycode)
 {
     return (osdkeycode==OSDK_A || osdkeycode==OSDK_I || osdkeycode==OSDK_U || osdkeycode==OSDK_E || osdkeycode==OSDK_O );
 }
 
 // ****************************************************************************
 // 　子音かどうか？
-// 非0  :はい    0:いいえ
+// true:はい    false:いいえ
 // ****************************************************************************
-int Romaji::isShin( int osdkeycode)
+bool Romaji::isShin( int osdkeycode)
 {
     return (osdkeycode==OSDK_K || osdkeycode==OSDK_S || osdkeycode==OSDK_T || osdkeycode==OSDK_H || osdkeycode==OSDK_M || osdkeycode==OSDK_Y
     || osdkeycode==OSDK_R || osdkeycode==OSDK_W || osdkeycode==OSDK_P || osdkeycode==OSDK_F 
@@ -442,7 +442,6 @@ int Romaji::convertSearch( char *buff , int *line)
 //      HENKAN_FAILED:  変換失敗
 //      HENKAN_DOING  : 変換中
 //      HENKAN_CANCEL : 無変換
-//      HENKAN_SUCCESS_LTU っ変換成功
 //***************************************************************
 int Romaji::convertRomaji2kana( int osdkeycode )
 {
@@ -451,8 +450,8 @@ int Romaji::convertRomaji2kana( int osdkeycode )
     int   line=0;
     int   found=0;
 
-
-    if( !(( OSDK_A <= osdkeycode && osdkeycode <= OSDK_Z) || osdkeycode == OSDK_AT || osdkeycode == OSDK_LEFTBRACKET) ) // 使えるキー判定
+    if( !(( OSDK_A <= osdkeycode && osdkeycode <= OSDK_Z) || osdkeycode == OSDK_AT 
+    || osdkeycode == OSDK_LEFTBRACKET || osdkeycode == OSDK_MINUS )) // 使えるキー判定
         {
         idx=0;
         memset(buff,0, sizeof(buff));
@@ -483,8 +482,7 @@ int Romaji::convertRomaji2kana( int osdkeycode )
 
             PRINTDEBUG(KEY_LOG,"[romaji][convert_romaji2kana] convert_success '%s' -> \t",buff);
 
-
-	        memcpy(result , romaji_tbl[line].keycode, MAX_RESULT);
+            setResult( romaji_tbl[line].keycode);
 
             if (found == HENKAN_SUCCESS_LTU)        // 子音ダブルできたとき（例えば、KKのときは、KK -> K にして、次の母音を待つ
                 {
@@ -508,6 +506,9 @@ int Romaji::convertRomaji2kana( int osdkeycode )
          idx=0;
          memset( buff, 0,  sizeof( buff));
         }
+    if( found == HENKAN_SUCCESS_LTU) {
+        found = HENKAN_SUCCESS;
+    }
     return found;
 }
 
@@ -553,4 +554,12 @@ void Romaji::init(void)
 char *Romaji::getResult(void)
 {
     return result;
+}
+
+// ****************************************************************************
+//   結果をセット
+// ****************************************************************************
+void Romaji::setResult(const char *in)
+{
+    memcpy( result , in , MAX_RESULT);
 }

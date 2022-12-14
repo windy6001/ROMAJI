@@ -2,7 +2,7 @@
 name is test.c
 
 Copyright (c) 2022 Windy
-Version 2.0
+Version 2.1
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -92,7 +92,7 @@ int main(int argc, char *argv[])
 	for(int i=0; i<strlen(buf);i++) {
 		int key = buf[i];
 		int ret = romaji->convertRomaji2kana( key );
-		if( ret == HENKAN_SUCCESS || ret == HENKAN_SUCCESS_LTU) {
+		if( ret == HENKAN_SUCCESS ) {
 			putAutokeyMessage( romaji->convertKana2Katakana( romaji->getResult()));
 		}
 	}

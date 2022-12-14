@@ -1,7 +1,7 @@
 # ROMAJI conversion program
 
 Copyright (c) 2020-2022 Windy
-Version 2.0
+Version 2.1
 
 
 # What is this?
@@ -13,9 +13,11 @@ Version 2.0
 
 ## 使い方
 
-OSキーイベントのキーが押されたとき、convertRomaji2kana() 関数を呼んでください。
+keys.h に暫定的なキーコードを設定してあります。環境に合わせて、キーコードを設定し直してください。
 
-ローマ字変換が成功した時、convertRomaji2kana() 関数は、HENKAN_SUCCESS か、HENKAN_SUCCESS_LTU を返却するので、
+OSキーイベントのKEYDOWN (キーが押されたとき)が発生したら、convertRomaji2kana() 関数を呼んでください。
+
+ローマ字変換が成功した時、convertRomaji2kana() 関数は、HENKAN_SUCCESS を返却するので、
 getResult(）関数で、変換結果を取得してください。変換結果は半角ひらがなになっています。
 半角カタカナに変換したい場合は、convertKana2Katakana()関数を呼び出してください。
 
@@ -33,6 +35,13 @@ Un*x 系OSだと、gcc でビルドできます。 make と打ち込んでくだ
 
 Windowsの Visual Studio では、開発者用コマンドプロンプトを開いて、nmake -f win32.mak でビルドできます。
 
+## 変更履歴
+
+Ver.2.1   isBoin() と isShin() の返却値の型を、int-> bool にしました。
+　　　　　　成功した時の返却値を、HENKAN_SUCCESS に統一しました。
+　　　　　　マイナスで長音が入力できるようにしました。
+　　　　　　結果をセットする関数 SetResult() を新設しました。
+Ver.2.0 　ソースリストをUTF-8 に対応させました。
 
 
 ## ライセンス

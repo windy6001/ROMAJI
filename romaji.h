@@ -40,13 +40,14 @@ public:
 Romaji(void);
 int    convertRomaji2kana( int osdkeycode );
 char * getResult(void);
+void   setResult(const char *in);
 char * convertKana2Katakana(char* buff);
 void   init(void);
 
 private:
 int    convertSearch( char *buff , int *line);
-int    isBoin( int osdkeycode);
-int    isShin( int osdkeycode);
+bool   isBoin( int osdkeycode);
+bool   isShin( int osdkeycode);
 char   result[ MAX_RESULT];
 };
 
